@@ -22,6 +22,7 @@ alter table public.saved_videos enable row level security;
 alter table public.notifications enable row level security;
 alter table public.reports enable row level security;
 create policy "profiles readable" on public.profiles for select using(true);
+create policy "own profile insert" on public.profiles for insert to authenticated with check(auth.uid()=id);
 create policy "own profile update" on public.profiles for update to authenticated using(auth.uid()=id) with check(auth.uid()=id);
 create policy "public videos readable" on public.videos for select using(visibility='public' or auth.uid()=user_id);
 create policy "own videos insert" on public.videos for insert to authenticated with check(auth.uid()=user_id);
@@ -40,3 +41,5 @@ create policy "history own" on public.watch_history for all to authenticated usi
 create policy "saved own" on public.saved_videos for all to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
 create policy "notifications own" on public.notifications for select to authenticated using(auth.uid()=user_id);
 create policy "reports insert" on public.reports for insert to authenticated with check(auth.uid()=reporter_id);
+grant select, insert, update, delete on all tables in schema public to anon, authenticated;
+grant usage, select on all sequences in schema public to anon, authenticated;
